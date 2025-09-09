@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Workplace Reference System — Email Enabled</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
+    <!-- EmailJS SDK (client‑side email service) -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%); padding: 20px; color: #333; min-height: 100vh; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,.15); overflow: hidden; }
+        header { background: linear-gradient(to right, #d23f2d, #b03526); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: bold; font-size: 28px; display: flex; align-items: center; gap: 10px; }
+        .logo-icon { font-size: 32px; }
+        .tabs { display: flex; background: #f0f0f0; border-bottom: 1px solid #ddd; }
+        .tab { padding: 15px 25px; cursor: pointer; background: #e8e8e8; border-right: 1px solid #ddd; transition: all .3s ease; display: flex; align-items: center; gap: 8px; }
+        .tab:hover { background: #e0e0e0; }
+        .tab.active { background: white; border-bottom: 3px solid #d23f2d; font-weight: bold; }
+        .tab-icon { font-size: 18px; }
+        .content { padding: 30px; }
+        .section { display: none; animation: fadeIn .5s ease; }
+        @keyframes fadeIn { from {opacity:0} to {opacity:1} }
+        .section.active { display: block; }
+        .email-preview { border: 1px solid #ddd; border-radius: 8px; margin-top: 25px; background: white; overflow: hidden; }
+        .email-header { background: #f0f6ff; padding: 20px; border-bottom: 1px solid #ddd; }
+        .email-body { padding: 25px; line-height: 1.6; }
+        .email-body p { margin-bottom: 15px; }
+        .email-footer { background: #f9f9f9; padding: 15px; border-top: 1px solid #ddd; font-size: 13px; color: #666; }
+        .form-group { margin-bottom: 25px; }
+        label { display: block; margin-bottom: 10px; font-weight: 500; color: #444; }
+        input[type="text"], input[type="email"], input[type="date"], select, textarea {
+            width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; transition: border .3s ease;
+        }
+        input:focus, textarea:focus, select:focus { border-color: #d23f2d; outline: none; box-shadow: 0 0 0 2px rgba(210,63,45,.2); }
+        .radio-group { display: flex; gap: 20px; margin-top: 8px; }
+        .radio-option { display: flex; align-items: center; gap: 8px; }
+        .rating-table { width: 100%; border-collapse: collapse; margin: 20px 0; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+        .rating-table th, .rating-table td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        .rating-table th { background: #f5f5f5; font-weight: 600; }
+        .rating-table tr:nth-child(even) { background: #f9f9f9; }
+        .btn { background: linear-gradient(to bottom, #d23f2d, #b03526); color: white; border: none; padding: 14px 25px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 500; transition: all .3s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .btn:hover { background: linear-gradient(to bottom, #c23a29, #9e3022); box-shadow: 0 3px 8px rgba(0,0,0,.2); transform: translateY(-2px); }
+        .btn:active { transform: translateY(0); }
+        .signature-pad { border: 1px solid #ddd; border-radius: 6px; height: 120px; margin-bottom: 15px; background: white; cursor: crosshair; touch-action: none; }
+        .confirmation { background: #e6f7ee; border: 1px solid #a3e9c6; border-radius: 8px; padding: 30px; margin-top: 25px; text-align: center; }
+        .confirmation-icon { font-size: 50px; margin-bottom: 15px; color: #28a745; }
+        .actions { display: flex; justify-content: space-between; margin-top: 30px; }
+        .page-title { font-size: 24px; margin-bottom: 25px; color: #333; display: flex; align-items: center; gap: 10px; }
+        .title-icon { font-size: 28px; }
+        .required { color: #d23f2d; }
+        @media (max-width: 768px) {
+            .tabs { flex-direction: column; }
+            .tab { border-right: none; border-bottom: 1px solid #ddd; }
+            .rating-table { font-size: 14px; }
+            .radio-group { flex-direction: column; gap: 10px; }
+            .actions { flex-direction: column; gap: 15px; }
+            .btn { width: 100%; justify-content: center; }
+        }
+        .github-info { text-align: center; margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-size: 14px; color: #666; }
+        .github-link { color: #d23f2d; text-decoration: none; font-weight: 500; }
+        .github-link:hover { text-decoration: underline; }
+        .note { font-size: 13px; color:#666; margin-top: 8px;}
+        .settings { background:#fff7f7; border:1px solid #ffd0d0; padding:15px; border-radius:8px; margin-bottom:20px;}
+        .settings code{background:#ffecec;padding:2px 4px;border-radius:4px;}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="logo"><span class="logo-icon">📝</span><span>RefCheck Pro</span></div>
+        <div>Workplace Reference System</div>
+    </header>
+
+    <div class="content">
+        <div class="settings">
+            <strong>⚙️ Email setup (EmailJS)</strong>
+            <p class="note">
+                Replace the placeholders below in <code>EMAIL_CONFIG</code> with your EmailJS credentials.<br/>
+                Create a free account at emailjs.com → add a Service, two Templates, and get your Public Key.
+            </p>
+            <pre class="note" style="white-space: pre-wrap;">
+EMAIL_CONFIG = {
+  publicKey: "YOUR_EMAILJS_PUBLIC_KEY",
+  serviceId: "YOUR_SERVICE_ID",
+  templateIdRequest: "YOUR_TEMPLATE_ID_FOR_REQUEST",
+  templateIdCompleted: "YOUR_TEMPLATE_ID_FOR_COMPLETED",
+  hrEmail: "hr@yourcompany.com"
+}
+            </pre>
+            <p class="note">No server required. If not configured, we fall back to your mail client using <code>mailto:</code>.</p>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="showSection('email')"><span class="tab-icon">✉️</span><span>Reference Request</span></div>
+        <div class="tab" onclick="showSection('form')"><span class="tab-icon">📋</span><span>Reference Form</span></div>
+        <div class="tab" onclick="showSection('completed')"><span class="tab-icon">✅</span><span>Completed Reference</span></div>
+    </div>
+
+    <div class="content">
+        <!-- Email Section -->
+        <div id="email" class="section active">
+            <div class="page-title"><span class="title-icon">✉️</span><span>Send Reference Request</span></div>
+
+            <div class="form-group">
+                <label for="candidateName">Candidate Name <span class="required">*</span></label>
+                <input type="text" id="candidateName" placeholder="Enter candidate's full name">
+            </div>
+
+            <div class="form-group">
+                <label for="refereeEmail">Referee Email Address <span class="required">*</span></label>
+                <input type="email" id="refereeEmail" placeholder="Enter referee's email address">
+            </div>
+
+            <button class="btn" onclick="sendReferenceRequest()">
+                <span>📤</span><span>Send Reference Request</span>
+            </button>
+
+            <div class="email-preview" style="margin-top:20px;">
+                <div class="email-header">
+                    <strong>From:</strong> HR Department &lt;<span id="previewFrom">hr@yourcompany.com</span>&gt;<br>
+                    <strong>To:</strong> <span id="previewRefereeEmail">referee@example.com</span><br>
+                    <strong>Subject:</strong> Reference Request for <span id="previewCandidateName">Candidate Name</span>
+                </div>
+                <div class="email-body">
+                    <p>Hello,</p>
+                    <p>I hope this email finds you well. I'm following up on our previous request for a reference for
+                       <strong id="previewCandidateName2">Candidate Name</strong> who is in the process of applying to register with our organisation.</p>
+                    <p>To help simplify the process, you may reply to this email or complete the online form here:
+                       <a href="#" onclick="showSection('form');return false;">Open reference form</a>.</p>
+                    <p>Kind regards,<br>HR Department<br>Your Company Name</p>
+                </div>
+                <div class="email-footer">This email was sent by RefCheck Pro Reference System.</div>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div id="form" class="section">
+            <div class="page-title"><span class="title-icon">📋</span><span>Reference Form</span></div>
+
+            <p><strong>You are providing a reference for:</strong></p>
+
+            <div class="form-group">
+                <label for="formCandidateName">Candidate Name <span class="required">*</span></label>
+                <input type="text" id="formCandidateName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="formPosition">Position applied for <span class="required">*</span></label>
+                <input type="text" id="formPosition" required>
+            </div>
+
+            <h3>Employment Details</h3>
+
+            <div class="form-group">
+                <label for="organizationName">Name of school/organisation <span class="required">*</span></label>
+                <input type="text" id="organizationName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="positionHeld">Position held by this candidate <span class="required">*</span></label>
+                <input type="text" id="positionHeld" required>
+            </div>
+
+            <div class="form-group">
+                <label for="startDate">Start date of employment <span class="required">*</span></label>
+                <input type="date" id="startDate" required>
+            </div>
+
+            <div class="form-group">
+                <label>Is the candidate still employed? <span class="required">*</span></label>
+                <div class="radio-group">
+                    <div class="radio-option"><input type="radio" id="stillEmployedYes" name="stillEmployed" value="yes" required><label for="stillEmployedYes">Yes</label></div>
+                    <div class="radio-option"><input type="radio" id="stillEmployedNo" name="stillEmployed" value="no"><label for="stillEmployedNo">No</label></div>
+                </div>
+            </div>
+
+            <h3>Performance Assessment</h3>
+
+            <table class="rating-table">
+                <thead>
+                    <tr><th>Criteria</th><th>Exceeds</th><th>Meets</th><th>Below</th><th>N/A</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Professional conduct</td>
+                        <td><input type="radio" name="conduct" value="exceeds"></td>
+                        <td><input type="radio" name="conduct" value="meets"></td>
+                        <td><input type="radio" name="conduct" value="below"></td>
+                        <td><input type="radio" name="conduct" value="na"></td></tr>
+                    <tr><td>Competency in current role</td>
+                        <td><input type="radio" name="competency" value="exceeds"></td>
+                        <td><input type="radio" name="competency" value="meets"></td>
+                        <td><input type="radio" name="competency" value="below"></td>
+                        <td><input type="radio" name="competency" value="na"></td></tr>
+                    <tr><td>Subject and curriculum knowledge</td>
+                        <td><input type="radio" name="knowledge" value="exceeds"></td>
+                        <td><input type="radio" name="knowledge" value="meets"></td>
+                        <td><input type="radio" name="knowledge" value="below"></td>
+                        <td><input type="radio" name="knowledge" value="na"></td></tr>
+                    <tr><td>Relationship with students/service users</td>
+                        <td><input type="radio" name="relationship" value="exceeds"></td>
+                        <td><input type="radio" name="relationship" value="meets"></td>
+                        <td><input type="radio" name="relationship" value="below"></td>
+                        <td><input type="radio" name="relationship" value="na"></td></tr>
+                </tbody>
+            </table>
+
+            <div class="form-group">
+                <label for="additionalComments">Additional comments</label>
+                <textarea id="additionalComments" rows="4"></textarea>
+            </div>
+
+            <h3>Confidential Questions</h3>
+
+            <div class="form-group">
+                <label>Would you recommend this candidate for employment? <span class="required">*</span></label>
+                <div class="radio-group">
+                    <div class="radio-option"><input type="radio" id="recommendYes" name="recommend" value="yes" required><label for="recommendYes">Yes</label></div>
+                    <div class="radio-option"><input type="radio" id="recommendNo" name="recommend" value="no"><label for="recommendNo">No</label></div>
+                </div>
+            </div>
+
+            <h3>Referee Details</h3>
+
+            <div class="form-group">
+                <label for="refereeName">Your Full Name <span class="required">*</span></label>
+                <input type="text" id="refereeName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="refereePosition">Your Position <span class="required">*</span></label>
+                <input type="text" id="refereePosition" required>
+            </div>
+
+            <div class="form-group">
+                <label for="refereeEmailConfirm">Your Email Address <span class="required">*</span></label>
+                <input type="email" id="refereeEmailConfirm" required>
+            </div>
+
+            <div class="form-group">
+                <label>Signature <span class="required">*</span></label>
+                <div class="signature-pad" id="signaturePad"></div>
+                <button type="button" class="btn" onclick="clearSignature()"><span>🗑️</span><span>Clear Signature</span></button>
+            </div>
+
+            <div class="actions">
+                <button type="button" class="btn" onclick="showSection('email')"><span>←</span><span>Back</span></button>
+                <button type="button" class="btn" onclick="submitReferenceForm()"><span>📨</span><span>Submit Reference</span></button>
+            </div>
+            <p class="note" style="margin-top:10px;">By submitting, a confirmation email is sent to HR and the referee (if configured).</p>
+        </div>
+
+        <!-- Completed Reference Section -->
+        <div id="completed" class="section">
+            <div class="page-title"><span class="title-icon">✅</span><span>Reference Successfully Submitted</span></div>
+            <div class="confirmation">
+                <div class="confirmation-icon">✔️</div>
+                <h3>Thank you for completing the reference!</h3>
+                <p>The reference for <strong id="completedCandidateName">Candidate Name</strong> has been successfully submitted and emailed to HR.</p>
+                <p>A confirmation email has been sent to <strong id="completedRefereeEmail">referee@example.com</strong>.</p>
+            </div>
+            <div class="actions">
+                <button type="button" class="btn" onclick="showSection('email')"><span>↰</span><span>Back to Reference Request</span></button>
+                <button type="button" class="btn" onclick="printReference()"><span>🖨️</span><span>Print Reference</span></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="github-info">
+        <p>This version can send emails via <strong>EmailJS</strong> (no server) or via your mail client as a fallback.</p>
+        <p>Deploy on GitHub Pages: upload as <strong>index.html</strong> and enable Pages in repo settings.</p>
+    </div>
+</div>
+
+<script>
+// ========= CONFIGURE THIS =========
+const EMAIL_CONFIG = {
+  publicKey: "YOUR_EMAILJS_PUBLIC_KEY",
+  serviceId: "YOUR_SERVICE_ID",
+  templateIdRequest: "YOUR_TEMPLATE_ID_FOR_REQUEST",
+  templateIdCompleted: "YOUR_TEMPLATE_ID_FOR_COMPLETED",
+  hrEmail: "hr@yourcompany.com"
+};
+// ==================================
+
+// Initialise EmailJS if configured
+let emailEnabled = false;
+function initEmail() {
+  try {
+    if (EMAIL_CONFIG.publicKey && EMAIL_CONFIG.publicKey !== "YOUR_EMAILJS_PUBLIC_KEY") {
+      emailjs.init({ publicKey: EMAIL_CONFIG.publicKey });
+      emailEnabled = true;
+    }
+  } catch (e) {
+    console.warn("EmailJS init failed; using mailto fallback.", e);
+    emailEnabled = false;
+  }
+}
+initEmail();
+
+// UI helpers
+function showSection(sectionId) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(sectionId).classList.add('active');
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.classList.remove('active');
+    if (tab.textContent.includes('Reference Request') && sectionId === 'email') tab.classList.add('active');
+    if (tab.textContent.includes('Reference Form') && sectionId === 'form') tab.classList.add('active');
+    if (tab.textContent.includes('Completed Reference') && sectionId === 'completed') tab.classList.add('active');
+  });
+  window.scrollTo(0,0);
+}
+
+// Live preview updates
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'candidateName') {
+    const name = e.target.value || 'Candidate Name';
+    document.getElementById('previewCandidateName').textContent = name;
+    document.getElementById('previewCandidateName2').textContent = name;
+    document.getElementById('formCandidateName').value = name;
+  }
+  if (e.target.id === 'refereeEmail') {
+    const em = e.target.value || 'referee@example.com';
+    document.getElementById('previewRefereeEmail').textContent = em;
+    document.getElementById('refereeEmailConfirm').value = em;
+  }
+});
+
+// Build a link to the online form
+function formLink() {
+  try {
+    const url = new URL(window.location.href);
+    url.hash = '#form';
+    return url.toString();
+  } catch { return 'Open the online reference form.'; }
+}
+
+// EmailJS send wrapper with fallback
+async function sendEmail(templateId, params, fallbackSubject, fallbackBody, toEmail) {
+  if (emailEnabled) {
+    try {
+      await emailjs.send(EMAIL_CONFIG.serviceId, templateId, params);
+      return true;
+    } catch (err) {
+      console.warn('EmailJS send failed; falling back to mailto.', err);
+    }
+  }
+  // Fallback: open user's email client
+  const subject = encodeURIComponent(fallbackSubject);
+  const body = encodeURIComponent(fallbackBody);
+  const mailto = `mailto:${encodeURIComponent(toEmail)}?subject=${subject}&body=${body}`;
+  window.location.href = mailto;
+  return false;
+}
+
+// Send reference request to referee
+async function sendReferenceRequest() {
+  const candidateName = document.getElementById('candidateName').value.trim();
+  const refereeEmail = document.getElementById('refereeEmail').value.trim();
+  const fromEmail = EMAIL_CONFIG.hrEmail || 'hr@yourcompany.com';
+  document.getElementById('previewFrom').textContent = fromEmail;
+
+  if (!candidateName || !refereeEmail) {
+    alert('Please enter both candidate name and referee email address.');
+    return;
+  }
+
+  const subject = `Reference Request for ${candidateName}`;
+  const body = [
+    `Hello,`,
+    ``,
+    `We're requesting a reference for ${candidateName}.`,
+    `You can reply to this email OR use the online form: ${formLink()}`,
+    ``,
+    `Kind regards,`,
+    `HR Department`,
+  ].join('\n');
+
+  const params = {
+    to_email: refereeEmail,
+    from_email: fromEmail,
+    candidate_name: candidateName,
+    subject_line: subject,
+    form_url: formLink()
+  };
+
+  const ok = await sendEmail(
+    EMAIL_CONFIG.templateIdRequest,
+    params,
+    subject,
+    body,
+    refereeEmail
+  );
+
+  if (ok) alert(`Reference request for ${candidateName} has been emailed to ${refereeEmail}.`);
+  // Pre-fill the form and switch view regardless
+  document.getElementById('formCandidateName').value = candidateName;
+  document.getElementById('refereeEmailConfirm').value = refereeEmail;
+  showSection('form');
+}
+
+// Submit reference form → email HR + confirmation to referee
+async function submitReferenceForm() {
+  const name = document.getElementById('formCandidateName').value.trim();
+  const refereeName = document.getElementById('refereeName').value.trim();
+  const refereeRole = document.getElementById('refereePosition').value.trim();
+  const refereeEmail = document.getElementById('refereeEmailConfirm').value.trim();
+  const position = document.getElementById('formPosition').value.trim();
+  const org = document.getElementById('organizationName').value.trim();
+  const positionHeld = document.getElementById('positionHeld').value.trim();
+  const startDate = document.getElementById('startDate').value;
+  const recommend = document.getElementById('recommendYes').checked ? 'Yes' :
+                    document.getElementById('recommendNo').checked ? 'No' : '';
+  const comments = document.getElementById('additionalComments').value.trim();
+
+  if (!name || !refereeName || !refereeEmail || !position || !org || !positionHeld || !startDate || !recommend) {
+    alert('Please fill in all required fields.');
+    return;
+  }
+
+  // Ensure signature provided
+  const canvas = document.getElementById('signaturePad');
+  const ctx = canvas.getContext('2d');
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  let isEmpty = true;
+  for (let i = 0; i < imageData.data.length; i += 4) { if (imageData.data[i + 3] !== 0) { isEmpty = false; break; } }
+  if (isEmpty) { alert('Please provide a signature.'); return; }
+
+  const hrEmail = EMAIL_CONFIG.hrEmail || 'hr@yourcompany.com';
+  const subject = `Completed Reference: ${name} (${org})`;
+
+  const bodyLines = [
+    `Candidate: ${name}`,
+    `Applied Position: ${position}`,
+    `Organisation: ${org}`,
+    `Position Held: ${positionHeld}`,
+    `Start Date: ${startDate}`,
+    `Recommended: ${recommend}`,
+    ``,
+    `Referee: ${refereeName} (${refereeRole})`,
+    `Referee Email: ${refereeEmail}`,
+    ``,
+    `Comments:`,
+    `${comments || '—'}`
+  ];
+  const body = bodyLines.join('\n');
+
+  // Convert signature to data URL (attach or include link)
+  const signatureDataUrl = canvas.toDataURL('image/png');
+
+  const params = {
+    to_email: hrEmail,
+    cc_email: refereeEmail,
+    subject_line: subject,
+    candidate_name: name,
+    applied_position: position,
+    organisation: org,
+    position_held: positionHeld,
+    start_date: startDate,
+    recommended: recommend,
+    referee_name: refereeName,
+    referee_role: refereeRole,
+    referee_email: refereeEmail,
+    comments: comments,
+    signature_data_url: signatureDataUrl
+  };
+
+  const ok = await sendEmail(
+    EMAIL_CONFIG.templateIdCompleted,
+    params,
+    subject,
+    body + `\n\n(Attach signature image manually if needed.)`,
+    hrEmail
+  );
+
+  // Update completion page
+  document.getElementById('completedCandidateName').textContent = name;
+  document.getElementById('completedRefereeEmail').textContent = refereeEmail;
+  showSection('completed');
+
+  if (ok) alert('Reference submitted. Emails sent to HR and the referee.');
+}
+
+// Signature pad
+function clearSignature() {
+  const canvas = document.getElementById('signaturePad');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+function initSignaturePad() {
+  const canvas = document.getElementById('signaturePad');
+  const ctx = canvas.getContext('2d');
+  let isDrawing = false, lastX = 0, lastY = 0;
+
+  // Set canvas size
+  canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+  ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.strokeStyle = '#000';
+
+  function start(e){ isDrawing = true; const r = canvas.getBoundingClientRect(); lastX = (e.offsetX ?? e.touches[0].clientX - r.left); lastY = (e.offsetY ?? e.touches[0].clientY - r.top); }
+  function move(e){
+    if (!isDrawing) return;
+    const r = canvas.getBoundingClientRect();
+    const x = (e.offsetX ?? e.touches[0].clientX - r.left);
+    const y = (e.offsetY ?? e.touches[0].clientY - r.top);
+    ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+    lastX = x; lastY = y;
+  }
+  function end(){ isDrawing = false; }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  canvas.addEventListener('mouseup', end);
+  canvas.addEventListener('mouseout', end);
+  canvas.addEventListener('touchstart', (e)=>{ e.preventDefault(); start(e); });
+  canvas.addEventListener('touchmove', (e)=>{ e.preventDefault(); move(e); });
+  canvas.addEventListener('touchend', (e)=>{ e.preventDefault(); end(e); });
+
+  // Keep drawing when resized (basic approach)
+  window.addEventListener('resize', () => {
+    const img = ctx.getImageData(0,0,canvas.width,canvas.height);
+    canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+    ctx.putImageData(img, 0, 0);
+  });
+}
+
+// Init app
+window.onload = function(){
+  initSignaturePad();
+  const today = new Date(); document.getElementById('startDate').value = today.toISOString().substr(0,10);
+};
+</script>
+</body>
+</html>
