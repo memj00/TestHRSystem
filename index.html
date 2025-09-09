@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workplace Reference System</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            padding: 20px;
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #d23f2d, #b03526);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-weight: bold;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 32px;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f0f0f0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            background: #e8e8e8;
+            border-right: 1px solid #ddd;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tab:hover {
+            background: #e0e0e0;
+        }
+        
+        .tab.active {
+            background: white;
+            border-bottom: 3px solid #d23f2d;
+            font-weight: bold;
+        }
+        
+        .tab-icon {
+            font-size: 18px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .email-preview {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 25px;
+            background: white;
+            overflow: hidden;
+        }
+        
+        .email-header {
+            background: #f0f6ff;
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .email-body {
+            padding: 25px;
+            line-height: 1.6;
+        }
+        
+        .email-body p {
+            margin-bottom: 15px;
+        }
+        
+        .email-footer {
+            background: #f9f9f9;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #444;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s ease;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            border-color: #d23f2d;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(210, 63, 45, 0.2);
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 8px;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .rating-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .rating-table th,
+        .rating-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .rating-table th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+        
+        .rating-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .btn {
+            background: linear-gradient(to bottom, #d23f2d, #b03526);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(to bottom, #c23a29, #9e3022);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .signature-pad {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            height: 120px;
+            margin-bottom: 15px;
+            background: white;
+            cursor: crosshair;
+            touch-action: none;
+        }
+        
+        .confirmation {
+            background: #e6f7ee;
+            border: 1px solid #a3e9c6;
+            border-radius: 8px;
+            padding: 30px;
+            margin-top: 25px;
+            text-align: center;
+        }
+        
+        .confirmation-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #28a745;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .title-icon {
+            font-size: 28px;
+        }
+        
+        .required {
+            color: #d23f2d;
+        }
+        
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+            }
+            
+            .rating-table {
+                font-size: 14px;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        .github-info {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .github-link {
+            color: #d23f2d;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .github-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span class="logo-icon">📝</span>
+                <span>RefCheck Pro</span>
+            </div>
+            <div>Workplace Reference System</div>
+        </header>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showSection('email')">
+                <span class="tab-icon">✉️</span>
+                <span>Reference Request</span>
+            </div>
+            <div class="tab" onclick="showSection('form')">
+                <span class="tab-icon">📋</span>
+                <span>Reference Form</span>
+            </div>
+            <div class="tab" onclick="showSection('completed')">
+                <span class="tab-icon">✅</span>
+                <span>Completed Reference</span>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- Email Section -->
+            <div id="email" class="section active">
+                <div class="page-title">
+                    <span class="title-icon">✉️</span>
+                    <span>Send Reference Request</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="candidateName">Candidate Name <span class="required">*</span></label>
+                    <input type="text" id="candidateName" placeholder="Enter candidate's full name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="refereeEmail">Referee Email Address <span class="required">*</span></label>
+                    <input type="email" id="refereeEmail" placeholder="Enter referee's email address">
+                </div>
+                
+                <button class="btn" onclick="sendReferenceRequest()">
+                    <span>📤</span>
+                    <span>Send Reference Request</span>
+                </button>
+                
+                <div class="email-preview">
+                    <div class="email-header">
+                        <strong>From:</strong> HR Department &lt;hr@yourcompany.com&gt;<br>
+                        <strong>To:</strong> <span id="previewRefereeEmail">referee@example.com</span><br>
+                        <strong>Subject:</strong> Reference Request for <span id="previewCandidateName">Candidate Name</span>
+                    </div>
+                    
+                    <div class="email-body">
+                        <p>Hello,</p>
+                        
+                        <p>I hope this email finds you well. I'm following up on our previous request for a reference for <strong id="previewCandidateName2">Candidate Name</strong> who is in the process of applying to register with our organization.</p>
+                        
+                        <p>If you haven't had the opportunity to provide the reference yet, we kindly ask for your assistance in completing this task at your earliest convenience.</p>
+                        
+                        <p>To help simplify the process, we offer the following reference options:</p>
+                        
+                        <p><strong>Option 1: Verbal reference</strong><br>
+                        Call us on 01234 567890 to provide the reference verbally. This is the easiest and quickest option.</p>
+                        
+                        <p><strong>Option 2: Online reference form</strong><br>
+                        Fill out our online reference form <a href="#" onclick="showSection('form'); return false;">here</a>.</p>
+                        
+                        <p><strong>Option 3: Upload your company form</strong><br>
+                        If you have a company-specific reference form, you can upload your completed form <a href="#">here</a>.</p>
+                        
+                        <p>Your prompt response would be greatly appreciated to ensure a timely progression in the recruitment process.</p>
+                        
+                        <p>Thank you sincerely for your time and assistance.</p>
+                        
+                        <p>Kind regards,<br>
+                        HR Department<br>
+                        Your Company Name</p>
+                    </div>
+                    
+                    <div class="email-footer">
+                        This email was sent by RefCheck Pro Reference System.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Form Section -->
+            <div id="form" class="section">
+                <div class="page-title">
+                    <span class="title-icon">📋</span>
+                    <span>Reference Form</span>
+                </div>
+                
+                <p><strong>You are providing a reference for:</strong></p>
+                
+                <div class="form-group">
+                    <label for="formCandidateName">Candidate Name <span class="required">*</span></label>
+                    <input type="text" id="formCandidateName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="formPosition">Position applied for <span class="required">*</span></label>
+                    <input type="text" id="formPosition" required>
+                </div>
+                
+                <h3>Employment Details</h3>
+                
+                <div class="form-group">
+                    <label for="organizationName">Name of school/organization <span class="required">*</span></label>
+                    <input type="text" id="organizationName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="positionHeld">Position held by this candidate <span class="required">*</span></label>
+                    <input type="text" id="positionHeld" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="startDate">Start date of employment <span class="required">*</span></label>
+                    <input type="date" id="startDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Is the candidate still employed? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="stillEmployedYes" name="stillEmployed" value="yes" required>
+                            <label for="stillEmployedYes">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="stillEmployedNo" name="stillEmployed" value="no">
+                            <label for="stillEmployedNo">No</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>Performance Assessment</h3>
+                
+                <p>Please rate this candidate's performance against each of the following criteria:</p>
+                
+                <table class="rating-table">
+                    <thead>
+                        <tr>
+                            <th>Criteria</th>
+                            <th>Exceeds expectations</th>
+                            <th>Meets expectations</th>
+                            <th>Below expectations</th>
+                            <th>N/A</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Professional conduct</td>
+                            <td><input type="radio" name="conduct" value="exceeds"></td>
+                            <td><input type="radio" name="conduct" value="meets"></td>
+                            <td><input type="radio" name="conduct" value="below"></td>
+                            <td><input type="radio" name="conduct" value="na"></td>
+                        </tr>
+                        <tr>
+                            <td>Competency in current role</td>
+                            <td><input type="radio" name="competency" value="exceeds"></td>
+                            <td><input type="radio" name="competency" value="meets"></td>
+                            <td><input type="radio" name="competency" value="below"></td>
+                            <td><input type="radio" name="competency" value="na"></td>
+                        </tr>
+                        <tr>
+                            <td>Subject and curriculum knowledge</td>
+                            <td><input type="radio" name="knowledge" value="exceeds"></td>
+                            <td><input type="radio" name="knowledge" value="meets"></td>
+                            <td><input type="radio" name="knowledge" value="below"></td>
+                            <td><input type="radio" name="knowledge" value="na"></td>
+                        </tr>
+                        <tr>
+                            <td>Relationship with students/service users</td>
+                            <td><input type="radio" name="relationship" value="exceeds"></td>
+                            <td><input type="radio" name="relationship" value="meets"></td>
+                            <td><input type="radio" name="relationship" value="below"></td>
+                            <td><input type="radio" name="relationship" value="na"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="form-group">
+                    <label for="additionalComments">Additional comments</label>
+                    <textarea id="additionalComments" rows="4"></textarea>
+                </div>
+                
+                <h3>Confidential Questions</h3>
+                
+                <div class="form-group">
+                    <label>Would you recommend this candidate for employment? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="recommendYes" name="recommend" value="yes" required>
+                            <label for="recommendYes">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="recommendNo" name="recommend" value="no">
+                            <label for="recommendNo">No</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>Referee Details</h3>
+                
+                <div class="form-group">
+                    <label for="refereeName">Your Full Name <span class="required">*</span></label>
+                    <input type="text" id="refereeName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="refereePosition">Your Position <span class="required">*</span></label>
+                    <input type="text" id="refereePosition" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="refereeEmailConfirm">Your Email Address <span class="required">*</span></label>
+                    <input type="email" id="refereeEmailConfirm" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Signature <span class="required">*</span></label>
+                    <div class="signature-pad" id="signaturePad"></div>
+                    <button type="button" class="btn" onclick="clearSignature()">
+                        <span>🗑️</span>
+                        <span>Clear Signature</span>
+                    </button>
+                </div>
+                
+                <div class="actions">
+                    <button type="button" class="btn" onclick="showSection('email')">
+                        <span>←</span>
+                        <span>Back</span>
+                    </button>
+                    <button type="button" class="btn" onclick="submitReferenceForm()">
+                        <span>📨</span>
+                        <span>Submit Reference</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Completed Reference Section -->
+            <div id="completed" class="section">
+                <div class="page-title">
+                    <span class="title-icon">✅</span>
+                    <span>Reference Successfully Submitted</span>
+                </div>
+                
+                <div class="confirmation">
+                    <div class="confirmation-icon">✔️</div>
+                    <h3>Thank you for completing the reference!</h3>
+                    <p>The reference for <strong id="completedCandidateName">Candidate Name</strong> has been successfully submitted and emailed to HR.</p>
+                    <p>A confirmation email has been sent to <strong id="completedRefereeEmail">referee@example.com</strong>.</p>
+                </div>
+                
+                <div class="actions">
+                    <button type="button" class="btn" onclick="showSection('email')">
+                        <span>↰</span>
+                        <span>Back to Reference Request</span>
+                    </button>
+                    <button type="button" class="btn" onclick="printReference()">
+                        <span>🖨️</span>
+                        <span>Print Reference</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="github-info">
+            <p>This reference system is designed to work as a standalone website that can be hosted on GitHub Pages.</p>
+            <p>To deploy on GitHub: Create a new repository, upload this HTML file as <strong>index.html</strong>, and enable GitHub Pages in repository settings.</p>
+        </div>
+    </div>
+
+    <script>
+        // Show the specified section and hide others
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Activate the corresponding tab
+            document.querySelectorAll('.tab').forEach(tab => {
+                if (tab.textContent.includes('Reference Request') && sectionId === 'email') {
+                    tab.classList.add('active');
+                } else if (tab.textContent.includes('Reference Form') && sectionId === 'form') {
+                    tab.classList.add('active');
+                } else if (tab.textContent.includes('Completed Reference') && sectionId === 'completed') {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+        
+        // Update email preview with candidate name
+        document.getElementById('candidateName').addEventListener('input', function() {
+            const candidateName = this.value || 'Candidate Name';
+            document.getElementById('previewCandidateName').textContent = candidateName;
+            document.getElementById('previewCandidateName2').textContent = candidateName;
+            document.getElementById('formCandidateName').value = candidateName;
+        });
+        
+        // Update email preview with referee email
+        document.getElementById('refereeEmail').addEventListener('input', function() {
+            document.getElementById('previewRefereeEmail').textContent = this.value || 'referee@example.com';
+            document.getElementById('refereeEmailConfirm').value = this.value;
+        });
+        
+        // Send reference request
+        function sendReferenceRequest() {
+            const candidateName = document.getElementById('candidateName').value;
+            const refereeEmail = document.getElementById('refereeEmail').value;
+            
+            if (!candidateName || !refereeEmail) {
+                alert('Please enter both candidate name and referee email address.');
+                return;
+            }
+            
+            alert(`Reference request for ${candidateName} has been sent to ${refereeEmail}`);
+            
+            // Pre-fill the form with candidate name
+            document.getElementById('formCandidateName').value = candidateName;
+            
+            // Switch to form view
+            showSection('form');
+        }
+        
+        // Submit reference form
+        function submitReferenceForm() {
+            const formCandidateName = document.getElementById('formCandidateName').value;
+            const refereeName = document.getElementById('refereeName').value;
+            const refereeEmail = document.getElementById('refereeEmailConfirm').value;
+            
+            if (!formCandidateName || !refereeName || !refereeEmail) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // Check if signature is provided
+            const canvas = document.getElementById('signaturePad');
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let isEmpty = true;
+            
+            for (let i = 0; i < imageData.data.length; i += 4) {
+                if (imageData.data[i + 3] !== 0) {
+                    isEmpty = false;
+                    break;
+                }
+            }
+            
+            if (isEmpty) {
+                alert('Please provide a signature.');
+                return;
+            }
+            
+            // Update completion page
+            document.getElementById('completedCandidateName').textContent = formCandidateName;
+            document.getElementById('completedRefereeEmail').textContent = refereeEmail;
+            
+            // Switch to completion view
+            showSection('completed');
+        }
+        
+        // Clear signature pad
+        function clearSignature() {
+            const canvas = document.getElementById('signaturePad');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        // Print reference
+        function printReference() {
+            window.print();
+        }
+        
+        // Initialize signature pad
+        function initSignaturePad() {
+            const canvas = document.getElementById('signaturePad');
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+            
+            // Set canvas size
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            ctx.lineWidth = 2;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#000';
+            
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            // Touch events for mobile devices
+            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchmove', handleTouchMove);
+            canvas.addEventListener('touchend', handleTouchEnd);
+            
+            function startDrawing(e) {
+                isDrawing = true;
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+            }
+            
+            function draw(e) {
+                if (!isDrawing) return;
+                
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+                
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+            }
+            
+            function stopDrawing() {
+                isDrawing = false;
+            }
+            
+            function handleTouchStart(e) {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                
+                isDrawing = true;
+                lastX = touch.clientX - rect.left;
+                lastY = touch.clientY - rect.top;
+            }
+            
+            function handleTouchMove(e) {
+                e.preventDefault();
+                if (!isDrawing) return;
+                
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                const currentX = touch.clientX - rect.left;
+                const currentY = touch.clientY - rect.top;
+                
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(currentX, currentY);
+                ctx.stroke();
+                
+                [lastX, lastY] = [currentX, currentY];
+            }
+            
+            function handleTouchEnd() {
+                isDrawing = false;
+            }
+        }
+        
+        // Initialize the application
+        window.onload = function() {
+            initSignaturePad();
+            
+            // Set current date as default for start date
+            const today = new Date();
+            const formattedDate = today.toISOString().substr(0, 10);
+            document.getElementById('startDate').value = formattedDate;
+            
+            // Add resize listener to adjust canvas size
+            window.addEventListener('resize', function() {
+                const canvas = document.getElementById('signaturePad');
+                const ctx = canvas.getContext('2d');
+                
+                // Save current drawing
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                
+                // Resize canvas
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                
+                // Restore drawing
+                ctx.putImageData(imageData, 0, 0);
+            });
+        };
+    </script>
+</body>
+</html>
